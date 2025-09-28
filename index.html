@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coffee Support</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 40px; background: #f7f3ef; }
+    header { background: #3e2723; color: white; padding: 20px; border-radius: 8px; }
+    h1 { margin: 0; }
+    nav { margin: 20px 0; }
+    nav a { margin: 0 15px; text-decoration: none; font-weight: bold; color: #3e2723; }
+    .counter { font-size: 2rem; margin: 20px; }
+    .plant { font-size: 5rem; }
+    input, button { padding: 10px; margin: 10px; font-size: 1rem; }
+    button { background: #795548; color: white; border: none; border-radius: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>☕ Coffee Support Platform</h1>
+    <p>Support farmers and grow our coffee plant together 🌱</p>
+  </header>
+
+  <nav>
+    <a href="#">Shop</a>
+    <a href="#">Donate</a>
+    <a href="#">Impact Tracker</a>
+  </nav>
+
+  <section>
+    <h2>Total Support Raised:</h2>
+    <div class="counter" id="funds">0</div>
+    <div class="plant" id="plant">🌱</div>
+  </section>
+
+  <section>
+    <h3>Make a Donation</h3>
+    <input type="number" id="donationAmount" placeholder="Enter amount (₱)">
+    <button onclick="donate()">Donate</button>
+  </section>
+
+  <script>
+    function updatePlant(total) {
+      const plantEl = document.getElementById("plant");
+      if (total < 50) plantEl.innerText = "🌱";
+      else if (total < 100) plantEl.innerText = "🌿";
+      else if (total < 200) plantEl.innerText = "🌳";
+      else plantEl.innerText = "🌸";
+    }
+
+    async function getFunds() {
+      let res = await fetch("/.netlify/functions/donate");
+      let data = await res.json();
+      document.getElementById("funds").innerText = data.total || 0;
+      updatePlant(data.total || 0);
+    }
+
+    async function donate() {
+      let amount = parseInt(document.getElementById("donationAmount").value);
+      if (isNaN(amount) || amount <= 0) return;
+
+      let res = await fetch("/.netlify/functions/donate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount }),
+      });
+
+      let data = await res.json();
+      document.getElementById("funds").innerText = data.total;
+      updatePlant(data.total);
+      document.getElementById("donationAmount").value = "";
+    }
+
+    getFunds();
+  </script>
+</body>
+</html>

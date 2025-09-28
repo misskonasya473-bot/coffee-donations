@@ -1,0 +1,11 @@
+{
+  "name": "coffee-donations",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "netlify dev",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "pg": "^8.11.3"
+  }
+}
